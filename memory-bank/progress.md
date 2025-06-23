@@ -1,6 +1,13 @@
 # Progress Tracker
 
-## Implementation Roadmap
+## Imp### Phase 3: Authentication Core (Clean Architecture) 🔄 NEXT UP
+
+- [ ] Domain layer: User, Role, Permission entities with business logic
+- [ ] Application layer: Use cases for auth operations (Register, Login, Logout)
+- [ ] Interface adapters: Controllers, repositories, and presenters
+- [ ] Infrastructure layer: MongoDB/Redis implementations with dependency injection
+- [ ] JWT token management system with LocalForage integration
+- [ ] Database models with Mongoose following repository patternion Roadmap
 
 ### Phase 1: Foundation Setup ✅ COMPLETE
 

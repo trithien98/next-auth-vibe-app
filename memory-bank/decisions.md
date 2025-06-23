@@ -2,7 +2,21 @@
 
 ## Architecture Decisions
 
-### ADR-001: Package Manager Selection (Bun)
+### ADR-001: Backend Architecture (Clean Architecture)
+
+**Date**: Current session
+**Decision**: Implement Clean Architecture pattern for backend
+**Rationale**:
+
+- Clear separation of concerns with defined layers (Domain, Application, Interface Adapters, Frameworks)
+- Business logic isolated from frameworks and infrastructure
+- Highly testable with dependency inversion principle
+- Maintainable and scalable for enterprise applications
+- Framework-agnostic core business logic enables easy migration
+- Better code organization with explicit dependencies
+  **Status**: Documented, ready for implementation
+
+### ADR-002: Package Manager Selection (Bun)
 
 **Date**: Current session
 **Decision**: Use Bun instead of npm/yarn/pnpm
@@ -14,7 +28,7 @@
 - Improved developer experience
   **Status**: Implemented across all documentation
 
-### ADR-002: Client-Side Storage (LocalForage)
+### ADR-003: Client-Side Storage (LocalForage)
 
 **Date**: Current session  
 **Decision**: Use LocalForage for secure token storage
