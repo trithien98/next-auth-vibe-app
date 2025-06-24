@@ -27,6 +27,9 @@
     "docker:seed": "docker-compose exec app bun run db:seed"
   },
   "dependencies": {
+    "@hookform/resolvers": "^5.1.1",
+    "@radix-ui/react-label": "^2.1.7",
+    "@radix-ui/react-slot": "^1.2.3",
     "bcryptjs": "^2.4.3",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
@@ -40,11 +43,12 @@
     "qrcode": "^1.5.4",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
+    "react-hook-form": "^7.58.1",
     "redis": "^4.7.0",
     "reflect-metadata": "^0.2.2",
     "speakeasy": "^2.0.0",
     "tailwind-merge": "^2.5.4",
-    "zod": "^3.24.1",
+    "zod": "^3.25.67",
     "zustand": "^5.0.2"
   },
   "devDependencies": {

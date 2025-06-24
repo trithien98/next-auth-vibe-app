@@ -29,22 +29,18 @@ const SessionSchema = new Schema<ISessionDocument>(
       type: String,
       required: true,
       unique: true,
-      index: true,
     },
     accessToken: {
       type: String,
       required: true,
-      index: true,
     },
     expiresAt: {
       type: Date,
       required: true,
-      index: true,
     },
     refreshExpiresAt: {
       type: Date,
       required: true,
-      index: true,
     },
     deviceInfo: {
       userAgent: {
@@ -63,7 +59,6 @@ const SessionSchema = new Schema<ISessionDocument>(
     isActive: {
       type: Boolean,
       default: true,
-      index: true,
     },
     lastUsedAt: {
       type: Date,
@@ -79,7 +74,6 @@ const SessionSchema = new Schema<ISessionDocument>(
 SessionSchema.index({ userId: 1, isActive: 1 });
 SessionSchema.index({ refreshToken: 1, isActive: 1 });
 SessionSchema.index({ expiresAt: 1 });
-SessionSchema.index({ refreshExpiresAt: 1 });
 
 // TTL index to automatically remove expired sessions
 SessionSchema.index({ refreshExpiresAt: 1 }, { expireAfterSeconds: 0 });

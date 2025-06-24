@@ -62,19 +62,31 @@ export class AuthController {
         return NextResponse.json(
           {
             success: false,
-            message: "Missing required fields: email, password",
+            message: "Email and password are required",
           },
           { status: 400 }
         );
       }
 
+      // Extract device information
+      const userAgent = request.headers.get("user-agent") || undefined;
+      const forwardedFor = request.headers.get("x-forwarded-for");
+      const ipAddress =
+        forwardedFor?.split(",")[0] ||
+        request.headers.get("x-real-ip") ||
+        request.headers.get("cf-connecting-ip") ||
+        undefined;
+
       const result = await this.loginUserUseCase.execute({
         email: body.email,
         password: body.password,
-        rememberMe: body.rememberMe,
+        rememberMe: body.rememberMe || false,
+        userAgent,
+        ipAddress,
+        deviceId: body.deviceId,
       });
 
-      const statusCode = result.success ? 200 : 401;
+      const statusCode = result.success ? 200 : 400;
       const response = NextResponse.json(result, { status: statusCode });
 
       // Set HTTP-only cookies for tokens if login successful

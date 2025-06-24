@@ -32,23 +32,38 @@ export class MongoUserRepository implements IUserRepository {
   }
 
   async findByEmail(email: Email): Promise<User | null> {
-    await connectToDatabase();
+    try {
+      console.log("DEBUG: Attempting to connect to database...");
+      await connectToDatabase();
+      console.log(
+        "DEBUG: Database connected, searching for email:",
+        email.getValue()
+      );
 
-    const userDoc = await UserModel.findOne({ email: email.getValue() })
-      .populate({
-        path: "roles",
-        populate: {
-          path: "permissions",
-          model: "Permission",
-        },
-      })
-      .exec();
+      const userDoc = await UserModel.findOne({ email: email.getValue() })
+        .populate({
+          path: "roles",
+          populate: {
+            path: "permissions",
+            model: "Permission",
+          },
+        })
+        .exec();
 
-    if (!userDoc) {
-      return null;
+      console.log(
+        "DEBUG: findByEmail query completed, userDoc:",
+        userDoc ? "found" : "not found"
+      );
+
+      if (!userDoc) {
+        return null;
+      }
+
+      return this.mapToEntity(userDoc);
+    } catch (error) {
+      console.error("ERROR: Failed to find user by email:", error);
+      throw error;
     }
-
-    return this.mapToEntity(userDoc);
   }
 
   async save(user: User): Promise<void> {

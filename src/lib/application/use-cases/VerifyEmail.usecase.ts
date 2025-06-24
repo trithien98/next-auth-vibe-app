@@ -39,7 +39,7 @@ export class VerifyEmailUseCase {
       }
 
       // Check if email is already verified
-      if (user.profile.isEmailVerified) {
+      if (user.getProfile().isEmailVerified) {
         return {
           success: false,
           message: "Email is already verified",
@@ -47,10 +47,10 @@ export class VerifyEmailUseCase {
       }
 
       // Verify the email
-      user.profile.isEmailVerified = true;
+      user.verifyEmail();
 
       // Clear verification token and expiry
-      await this.userRepository.clearVerificationToken(user.id.value);
+      await this.userRepository.clearVerificationToken(user.getId().getValue());
 
       // Save the user
       await this.userRepository.save(user);
@@ -59,8 +59,8 @@ export class VerifyEmailUseCase {
         success: true,
         message: "Email verified successfully",
         data: {
-          userId: user.id.value,
-          email: user.email.value,
+          userId: user.getId().getValue(),
+          email: user.getEmail().getValue(),
         },
       };
     } catch (error) {

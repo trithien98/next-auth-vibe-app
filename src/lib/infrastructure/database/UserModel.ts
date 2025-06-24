@@ -33,7 +33,6 @@ const UserSchema = new Schema<IUserDocument>(
       unique: true,
       lowercase: true,
       trim: true,
-      index: true,
     },
     passwordHash: {
       type: String,
@@ -86,20 +85,16 @@ const UserSchema = new Schema<IUserDocument>(
     // Email verification fields
     emailVerificationToken: {
       type: String,
-      index: true,
     },
     emailVerificationExpires: {
       type: Date,
-      index: true,
     },
     // Password reset fields
     passwordResetToken: {
       type: String,
-      index: true,
     },
     passwordResetExpires: {
       type: Date,
-      index: true,
     },
   },
   {
@@ -108,7 +103,6 @@ const UserSchema = new Schema<IUserDocument>(
 );
 
 // Indexes
-UserSchema.index({ email: 1 });
 UserSchema.index({ "profile.isEmailVerified": 1 });
 UserSchema.index({ isActive: 1 });
 UserSchema.index({ emailVerificationToken: 1 });
