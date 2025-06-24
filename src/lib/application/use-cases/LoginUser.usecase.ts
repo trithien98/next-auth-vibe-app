@@ -53,14 +53,8 @@ export class LoginUserUseCase {
         };
       }
 
-      // Check if email is verified
+      // Get user profile
       const profile = user.getProfile();
-      if (!profile.isEmailVerified) {
-        return {
-          success: false,
-          message: "Please verify your email before logging in",
-        };
-      }
 
       // Check if two-factor authentication is required
       if (profile.isTwoFactorEnabled) {

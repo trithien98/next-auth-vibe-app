@@ -87,6 +87,9 @@ export const useAuthStore = create<AuthState>((set, get) => ({
           refreshExpiresAt: new Date(data.refreshExpiresAt).getTime(),
         });
 
+        // Store user data
+        await tokenManager.setUserData(data.user);
+
         // Set user
         set({
           user: data.user,
@@ -182,10 +185,24 @@ export const useAuthStore = create<AuthState>((set, get) => ({
         const refreshed = await tokenManager.refreshTokensIfNeeded();
 
         if (refreshed) {
-          // Fetch user data from a protected endpoint or decode from token
-          // For now, we'll assume the user data is available in localStorage
-          // In a real app, you might want to fetch user data from an API
-          set({ isAuthenticated: true, isLoading: false });
+          // Get stored user data
+          const userData = await tokenManager.getUserData();
+          
+          if (userData) {
+            set({ 
+              user: userData,
+              isAuthenticated: true, 
+              isLoading: false 
+            });
+          } else {
+            // No user data found, clear tokens and redirect to login
+            await tokenManager.clearTokens();
+            set({
+              user: null,
+              isAuthenticated: false,
+              isLoading: false,
+            });
+          }
         } else {
           await tokenManager.clearTokens();
           set({

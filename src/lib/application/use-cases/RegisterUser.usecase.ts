@@ -54,11 +54,8 @@ export class RegisterUserUseCase {
       // Create user entity
       const user = new User(userId, email, userProfile);
 
-      // Set password hash (assuming we add this method to User entity)
-      // For now, we'll handle password storage in the infrastructure layer
-
-      // Save user to repository
-      await this.userRepository.save(user);
+      // Save user to repository with password
+      await this.userRepository.save(user, dto.password);
 
       // Generate email verification token
       const verificationToken = crypto.randomBytes(32).toString("hex");

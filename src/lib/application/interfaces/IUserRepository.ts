@@ -7,7 +7,7 @@ export interface IUserRepository {
   findByEmail(email: Email): Promise<User | null>;
   findByVerificationToken(token: string): Promise<User | null>;
   findByPasswordResetToken(token: string): Promise<User | null>;
-  save(user: User): Promise<void>;
+  save(user: User, password?: string): Promise<void>;
   update(user: User): Promise<void>;
   delete(id: UserId): Promise<void>;
   exists(email: Email): Promise<boolean>;

@@ -7,10 +7,21 @@ export interface TokenData {
   refreshExpiresAt: number;
 }
 
+export interface UserData {
+  id: string;
+  email: string;
+  firstName: string;
+  lastName: string;
+  roles: string[];
+  isEmailVerified: boolean;
+  isTwoFactorEnabled: boolean;
+}
+
 export class TokenManager {
   private static readonly ACCESS_TOKEN_KEY = "auth_access_token";
   private static readonly REFRESH_TOKEN_KEY = "auth_refresh_token";
   private static readonly TOKEN_DATA_KEY = "auth_token_data";
+  private static readonly USER_DATA_KEY = "auth_user_data";
 
   constructor() {
     // Configure localforage for better performance and security
@@ -151,6 +162,7 @@ export class TokenManager {
         localforage.removeItem(TokenManager.TOKEN_DATA_KEY),
         localforage.removeItem(TokenManager.ACCESS_TOKEN_KEY),
         localforage.removeItem(TokenManager.REFRESH_TOKEN_KEY),
+        localforage.removeItem(TokenManager.USER_DATA_KEY),
       ]);
     } catch (error) {
       console.error("Failed to clear tokens:", error);
@@ -221,6 +233,30 @@ export class TokenManager {
     } catch (error) {
       console.error("Failed to refresh tokens:", error);
       return false;
+    }
+  }
+
+  /**
+   * Store user data securely
+   */
+  async setUserData(userData: UserData): Promise<void> {
+    try {
+      await localforage.setItem(TokenManager.USER_DATA_KEY, userData);
+    } catch (error) {
+      console.error("Failed to store user data:", error);
+      throw new Error("Failed to store user data");
+    }
+  }
+
+  /**
+   * Get stored user data
+   */
+  async getUserData(): Promise<UserData | null> {
+    try {
+      return await localforage.getItem<UserData>(TokenManager.USER_DATA_KEY);
+    } catch (error) {
+      console.error("Failed to retrieve user data:", error);
+      return null;
     }
   }
 }

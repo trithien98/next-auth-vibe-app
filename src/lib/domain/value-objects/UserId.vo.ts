@@ -1,3 +1,5 @@
+import { ObjectId } from "mongodb";
+
 export class UserId {
   private readonly value: string;
 
@@ -9,10 +11,8 @@ export class UserId {
   }
 
   public static generate(): UserId {
-    // Generate a new UUID-like string
-    const timestamp = Date.now().toString(36);
-    const randomPart = Math.random().toString(36).substring(2);
-    return new UserId(`${timestamp}${randomPart}`);
+    // Generate a new MongoDB ObjectId
+    return new UserId(new ObjectId().toString());
   }
 
   public getValue(): string {

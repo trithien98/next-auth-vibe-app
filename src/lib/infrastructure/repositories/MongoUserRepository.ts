@@ -40,15 +40,9 @@ export class MongoUserRepository implements IUserRepository {
         email.getValue()
       );
 
-      const userDoc = await UserModel.findOne({ email: email.getValue() })
-        .populate({
-          path: "roles",
-          populate: {
-            path: "permissions",
-            model: "Permission",
-          },
-        })
-        .exec();
+      const userDoc = await UserModel.findOne({
+        email: email.getValue(),
+      }).exec();
 
       console.log(
         "DEBUG: findByEmail query completed, userDoc:",
@@ -66,12 +60,19 @@ export class MongoUserRepository implements IUserRepository {
     }
   }
 
-  async save(user: User): Promise<void> {
+  async save(user: User, password?: string): Promise<void> {
     await connectToDatabase();
+
+    // Hash password if provided
+    let passwordHash: string | undefined;
+    if (password) {
+      passwordHash = await bcrypt.hash(password, 12);
+    }
 
     const userDoc = new UserModel({
       _id: user.getId().getValue(),
       email: user.getEmail().getValue(),
+      passwordHash: passwordHash,
       profile: user.getProfile(),
       roles: user.getRoles().map((role) => role.getId()),
       isActive: user.isUserActive(),
