@@ -1,4 +1,5 @@
 import { injectable, inject } from "inversify";
+import crypto from "crypto";
 import { User } from "../../domain/entities/User.entity";
 import { UserId } from "../../domain/value-objects/UserId.vo";
 import { Email } from "../../domain/value-objects/Email.vo";
@@ -59,12 +60,28 @@ export class RegisterUserUseCase {
       // Save user to repository
       await this.userRepository.save(user);
 
-      // Send verification email
-      // Generate verification token (this would be handled by a token service)
-      const verificationToken = Math.random().toString(36).substring(2, 15);
+      // Generate email verification token
+      const verificationToken = crypto.randomBytes(32).toString("hex");
+      const hashedToken = crypto
+        .createHash("sha256")
+        .update(verificationToken)
+        .digest("hex");
+
+      // Set verification token with 24 hour expiry
+      const expiresAt = new Date();
+      expiresAt.setHours(expiresAt.getHours() + 24);
+
+      await this.userRepository.setVerificationToken(
+        userId.getValue(),
+        hashedToken,
+        expiresAt
+      );
+
+      // Send verification email with the original token (not hashed)
+      const verificationUrl = `${process.env.FRONTEND_URL}/verify-email?token=${verificationToken}`;
       await this.emailService.sendVerificationEmail(
         email.getValue(),
-        verificationToken
+        verificationUrl
       );
 
       return {

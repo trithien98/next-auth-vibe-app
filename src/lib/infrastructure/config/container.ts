@@ -5,6 +5,11 @@ import { Container } from "inversify";
 import { RegisterUserUseCase } from "../../application/use-cases/RegisterUser.usecase";
 import { LoginUserUseCase } from "../../application/use-cases/LoginUser.usecase";
 import { LogoutUserUseCase } from "../../application/use-cases/LogoutUser.usecase";
+import { VerifyEmailUseCase } from "../../application/use-cases/VerifyEmail.usecase";
+import {
+  ForgotPasswordUseCase,
+  ResetPasswordUseCase,
+} from "../../application/use-cases/PasswordReset.usecase";
 
 // Interfaces
 import type { IUserRepository } from "../../application/interfaces/IUserRepository";
@@ -29,6 +34,13 @@ container
   .to(RegisterUserUseCase);
 container.bind<LoginUserUseCase>("LoginUserUseCase").to(LoginUserUseCase);
 container.bind<LogoutUserUseCase>("LogoutUserUseCase").to(LogoutUserUseCase);
+container.bind<VerifyEmailUseCase>("VerifyEmailUseCase").to(VerifyEmailUseCase);
+container
+  .bind<ForgotPasswordUseCase>("ForgotPasswordUseCase")
+  .to(ForgotPasswordUseCase);
+container
+  .bind<ResetPasswordUseCase>("ResetPasswordUseCase")
+  .to(ResetPasswordUseCase);
 
 // Bind Repositories
 container.bind<IUserRepository>("IUserRepository").to(MongoUserRepository);

@@ -47,17 +47,34 @@ export class LogoutUserUseCase {
         }
       }
 
-      // In a real implementation, we would:
-      // 1. Invalidate the refresh token (add to blacklist or remove from storage)
-      // 2. Optionally invalidate all sessions for the user
-      // 3. Clear any session data stored in Redis
+      // Invalidate the refresh token and session
+      if (dto.refreshToken) {
+        const invalidated = await this.jwtTokenService.invalidateSession(
+          dto.refreshToken
+        );
+        if (!invalidated) {
+          console.warn(
+            "Failed to invalidate session, but proceeding with logout"
+          );
+        }
+      }
 
-      // For now, we just return success since the actual token invalidation
-      // would be handled in the infrastructure layer
+      // If logoutFromAllDevices is true, invalidate all user sessions
+      if (dto.logoutFromAllDevices) {
+        const allInvalidated =
+          await this.jwtTokenService.invalidateAllUserSessions(
+            userId.getValue()
+          );
+        if (!allInvalidated) {
+          console.warn("Failed to invalidate all user sessions");
+        }
+      }
 
       return {
         success: true,
-        message: "Logout successful",
+        message: dto.logoutFromAllDevices
+          ? "Logged out from all devices successfully"
+          : "Logout successful",
       };
     } catch (error) {
       if (error instanceof Error) {

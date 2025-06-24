@@ -15,6 +15,12 @@ export interface IUserDocument extends Document {
   };
   roles: string[]; // Array of role IDs
   isActive: boolean;
+  // Email verification fields
+  emailVerificationToken?: string;
+  emailVerificationExpires?: Date;
+  // Password reset fields
+  passwordResetToken?: string;
+  passwordResetExpires?: Date;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -77,6 +83,24 @@ const UserSchema = new Schema<IUserDocument>(
       type: Boolean,
       default: true,
     },
+    // Email verification fields
+    emailVerificationToken: {
+      type: String,
+      index: true,
+    },
+    emailVerificationExpires: {
+      type: Date,
+      index: true,
+    },
+    // Password reset fields
+    passwordResetToken: {
+      type: String,
+      index: true,
+    },
+    passwordResetExpires: {
+      type: Date,
+      index: true,
+    },
   },
   {
     timestamps: true,
@@ -87,6 +111,8 @@ const UserSchema = new Schema<IUserDocument>(
 UserSchema.index({ email: 1 });
 UserSchema.index({ "profile.isEmailVerified": 1 });
 UserSchema.index({ isActive: 1 });
+UserSchema.index({ emailVerificationToken: 1 });
+UserSchema.index({ passwordResetToken: 1 });
 
 export const UserModel =
   models.User || model<IUserDocument>("User", UserSchema);

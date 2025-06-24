@@ -1,4 +1,5 @@
 import { injectable } from "inversify";
+import bcrypt from "bcryptjs";
 import { User } from "../../domain/entities/User.entity";
 import { Role } from "../../domain/entities/Role.entity";
 import { Permission } from "../../domain/entities/Permission.entity";
@@ -92,6 +93,112 @@ export class MongoUserRepository implements IUserRepository {
 
     const count = await UserModel.countDocuments({ email: email.getValue() });
     return count > 0;
+  }
+
+  async findByVerificationToken(token: string): Promise<User | null> {
+    await connectToDatabase();
+
+    const userDoc = await UserModel.findOne({
+      emailVerificationToken: token,
+      emailVerificationExpires: { $gt: new Date() },
+    })
+      .populate({
+        path: "roles",
+        populate: {
+          path: "permissions",
+          model: "Permission",
+        },
+      })
+      .exec();
+
+    if (!userDoc) {
+      return null;
+    }
+
+    return this.mapToEntity(userDoc);
+  }
+
+  async findByPasswordResetToken(token: string): Promise<User | null> {
+    await connectToDatabase();
+
+    const userDoc = await UserModel.findOne({
+      passwordResetToken: token,
+      passwordResetExpires: { $gt: new Date() },
+    })
+      .populate({
+        path: "roles",
+        populate: {
+          path: "permissions",
+          model: "Permission",
+        },
+      })
+      .exec();
+
+    if (!userDoc) {
+      return null;
+    }
+
+    return this.mapToEntity(userDoc);
+  }
+
+  async verifyPassword(email: Email, password: string): Promise<boolean> {
+    await connectToDatabase();
+
+    const userDoc = await UserModel.findOne({ email: email.getValue() }).exec();
+    if (!userDoc) {
+      return false;
+    }
+
+    // Use bcrypt to verify the password
+    return await bcrypt.compare(password, userDoc.passwordHash);
+  }
+
+  async setVerificationToken(
+    userId: string,
+    token: string,
+    expiresAt: Date
+  ): Promise<void> {
+    await connectToDatabase();
+
+    await UserModel.findByIdAndUpdate(userId, {
+      emailVerificationToken: token,
+      emailVerificationExpires: expiresAt,
+    });
+  }
+
+  async clearVerificationToken(userId: string): Promise<void> {
+    await connectToDatabase();
+
+    await UserModel.findByIdAndUpdate(userId, {
+      $unset: {
+        emailVerificationToken: 1,
+        emailVerificationExpires: 1,
+      },
+    });
+  }
+
+  async setPasswordResetToken(
+    userId: string,
+    token: string,
+    expiresAt: Date
+  ): Promise<void> {
+    await connectToDatabase();
+
+    await UserModel.findByIdAndUpdate(userId, {
+      passwordResetToken: token,
+      passwordResetExpires: expiresAt,
+    });
+  }
+
+  async clearPasswordResetToken(userId: string): Promise<void> {
+    await connectToDatabase();
+
+    await UserModel.findByIdAndUpdate(userId, {
+      $unset: {
+        passwordResetToken: 1,
+        passwordResetExpires: 1,
+      },
+    });
   }
 
   private mapToEntity(userDoc: IUserDocument): User {
